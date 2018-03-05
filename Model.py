@@ -42,15 +42,16 @@ for file in files:
 		ride_next = rides[0]
 		rides.pop(0)				
 
-		# Asignar al coche su posicion siguiente
-		car_next.position=ride_next.position_final
 		time_to_go = distance_to_from(car_next.position, ride_next.position_init)
-		time_to_start = ride_next.time_init 
-		# Siguiente momento diponible es la suma de max(lo que le cueste llegar o cuando empiece la tarea) es decir, de cuadno empieza la tarea
-		# y a eso le sumas a la distancia a recorrer del ride
-		car_next.step_available=max(time_to_start, time_to_go) + distance_to_from(ride_next.position_init, ride_next.position_final)
-		car_next.rides=car_next.rides + [ride_next]
+		time_to_start_expected = ride_next.time_init 
+		time_to_start_real = max(time_to_go, time_to_start ) 
+		distance = distance_to_from(ride_next.position_init, ride_next.position_final)
 
+		if time_to_start_real + distance <= ride_next.time_final:
+			# Asignar al coche su posicion siguiente
+			car_next.position=ride_next.position_final
+			car_next.step_available=time_to_start_real + distance
+			car_next.rides=car_next.rides + [ride_next]
 
 
 
