@@ -38,13 +38,16 @@ for file in files:
 		car_next = cars[0]
 
 		# Asignar siguiente tarea disponible al coche
-		rides.sort(key=lambda x: x.time_init + distance_to_from(car_next.position, x.position_init), reverse=False)
+		# Se ordena por tiempo de inicio*Bonus porque el bonus es el peso que se le da al tiempo de inicio (el bonus lo dan solo si empieazas pronto)
+		# Es decir, cuando el bonus sea grande, el tiempo el tiempo_init sera muy grande, y para ordenar, tendra mas peso respecto a las otras cosas
+		# Ademas se le suma la distancia al coche, cosa que es importante a minimizar tambien, y su peso es ella misma ya que es lo que se puntua al realizarlo
+		rides.sort(key=lambda x: x.time_init*bonus + math.pow(distance_to_from(car_next.position, x.position_init),2), reverse=False)
 		ride_next = rides[0]
 		rides.pop(0)				
 
 		time_to_go = distance_to_from(car_next.position, ride_next.position_init)
 		time_to_start_expected = ride_next.time_init 
-		time_to_start_real = max(time_to_go, time_to_start ) 
+		time_to_start_real = max(time_to_go, time_to_start_expected ) 
 		distance = distance_to_from(ride_next.position_init, ride_next.position_final)
 
 		if time_to_start_real + distance <= ride_next.time_final:
