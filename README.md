@@ -1,2 +1,5 @@
 # GoogleHashCode18
-# GoogleHashCode18
+
+```
+sh run.sh
+```
