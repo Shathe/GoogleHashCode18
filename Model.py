@@ -12,7 +12,12 @@ def distance_to_from(a, b):
 
 # Por hacer
 def value_solution(cars):
+	for car in cars:
+		for ride in car.ride:
+			print(ride.id)
 	pass
+
+suma = 0
 
 files=['a_example','b_should_be_easy','c_no_hurry','d_metropolis','e_high_bonus']
 
@@ -31,17 +36,14 @@ for file in files:
 
 
 
-
+	print(bonus)
 	while len(rides) > 0 :
 		#coger siguiente coche
 		cars.sort(key=lambda x:  x.step_available, reverse=False)
 		car_next = cars[0]
 
 		# Asignar siguiente tarea disponible al coche
-		# Se ordena por tiempo de inicio*Bonus porque el bonus es el peso que se le da al tiempo de inicio (el bonus lo dan solo si empieazas pronto)
-		# Es decir, cuando el bonus sea grande, el tiempo el tiempo_init sera muy grande, y para ordenar, tendra mas peso respecto a las otras cosas
-		# Ademas se le suma la distancia al coche, cosa que es importante a minimizar tambien, y su peso es ella misma ya que es lo que se puntua al realizarlo
-		rides.sort(key=lambda x: x.time_init*bonus + math.pow(distance_to_from(car_next.position, x.position_init),2), reverse=False)
+		rides.sort(key=lambda x: x.time_init + distance_to_from(car_next.position, x.position_init), reverse=False)
 		ride_next = rides[0]
 		rides.pop(0)				
 
@@ -50,17 +52,23 @@ for file in files:
 		time_to_start_real = max(time_to_go, time_to_start_expected ) 
 		distance = distance_to_from(ride_next.position_init, ride_next.position_final)
 
+		# catch only if the car is able to make it in time
 		if time_to_start_real + distance <= ride_next.time_final:
 			# Asignar al coche su posicion siguiente
 			car_next.position=ride_next.position_final
 			car_next.step_available=time_to_start_real + distance
 			car_next.rides=car_next.rides + [ride_next]
 
+			suma = suma + distance
+			if time_to_start_real == time_to_start_expected:
+				suma = suma + bonus
+
+
 
 
 
 	ex = Extractor.Extractor(cars, file)
 	ex.write()
-
+print('score: ' + str(suma/1000000.0) + ' M')
 # Creo que eta solucion da 40496957: 40.5 M
 

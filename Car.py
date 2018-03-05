@@ -7,3 +7,4 @@ class Car:
     	self.position=[0,0]
     	self.available_in=0
     	self.step_available=0
+    	self.score=0
