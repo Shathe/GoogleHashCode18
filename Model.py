@@ -10,14 +10,11 @@ import Solution
 def distance_to_from(a, b):
 	return abs(a[0]-b[0]) + abs(a[1]-b[1])
 
-# Por hacer
-def value_solution(cars):
-	for car in cars:
-		for ride in car.ride:
-			print(ride.id)
-	pass
+
 
 files=['a_example','b_should_be_easy','c_no_hurry','d_metropolis','e_high_bonus']
+files=['b_should_be_easy']
+
 best_scores=[10, 176877, 15777925, 10296018, 21465945]
 best_global = 45664825
 suma_total = 0
@@ -90,6 +87,8 @@ for file, score in zip(files, best_scores):
 	solution = Solution.Solution(cars, rule_out_rides, bonus)
 	solutions =  solutions + [solution]
 
+
+
 	score_new = solution.get_score()
 	suma_total = suma_total + score_new
 	print('solution score ' + str(score_new))
@@ -102,6 +101,11 @@ for file, score in zip(files, best_scores):
 print('score: ' + str(suma_total/1000000.0) + ' M')
 if best_global < suma_total:
 	print('Has mejorado el algoritmo!')
+
+
+
+
+	
 
 '''
 IDEAS:

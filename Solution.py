@@ -13,30 +13,74 @@ class Solution:
 		self.rides_no_assinged=rides_no_assinged
 		self.bonus = bonus
 
+	def add_ride_into_car(self, index_car, ride):
+		i = 0
+		# Get the position the first it can fit (el time_init del ride es menor que el time_final del siguiente en la lista)
+		# get the last position to fit: ride.time_final es mayor que el start de la siguiente en la lista
+		index_min = 0
+		index_max = 0
+		while i < len(self.cars[index_car].rides):
+
+			if ride.time_init >= self.cars[index_car].rides[i].time_final:
+				index_min = i + 1
+
+			if ride.time_final <= self.cars[index_car].rides[i].time_init:
+				index_max = i + 1
+
+			i = i + 1
+
+
+		index = random.randint(index_min, index_max)
+		self.cars[index_car].rides.insert(index, ride)
+
+
+
+
 	def add_no_assigned_ride(self):
 		if len(self.rides_no_assinged) > 0:
-			car = random.choice(self.cars)
+			# If there is a no assigned ride
+
+			car_index = random.randint(0, len(self.cars) - 1)
 			ride = random.choice(self.rides_no_assinged)
-			car.rides = car.rides + [ride]
+			# Add it into a fittable position
+			self.add_ride_into_car(index_car, ride)
 
 	def swap_rides(self):
-		car1 = random.choice(self.cars)
-		car2 = random.choice(self.cars)
-		while car1 == car2:
-			car2 = random.choice(self.cars)
+		# get two cars (indexes)
+		car_index_1 = random.randint(0, len(self.cars) - 1)
+		car_index_2 = random.randint(0, len(self.cars) - 1)
+		while car_index_2 == car_index_1:
+			car_index_2 = random.randint(0, len(self.cars) - 1)
 
+		car1 = self.cars[car_index_1]
+		car2 = self.cars[car_index_2]
+		# If they have rides
 		if len(car1.rides) > 0 and len(car2.rides) > 0:
+			# Get two random rides from them
 			ride2_index = random.randint(0, len(car2.rides) - 1)
 			ride1_index = random.randint(0, len(car1.rides) - 1)
-			aux = car2.rides[ride2_index].copy()
-			car2.rides[ride2_index] = car1.rides[ride1_index]
-			car1.rides[ride1_index] = aux
-			#  right?
+			ride1 = car1.rides[ride1_index]
+			ride2 = car2.rides[ride2_index]
+			car1.rides.pop(ride1_index)
+			car2.rides.pop(ride2_index)
 
-		
+			#swap them
+			self.add_ride_into_car(car_index_1, ride2)
+			self.add_ride_into_car(car_index_2, ride1)
+
+			
 
 	def from_car_to_unassigned(self):
-		pass
+		car = random.choice(self.cars)
+		tries = len(self.cars)
+		while len(car.rides) == 0 and tries >= 0:
+			car = random.choice(self.cars)
+			tries = tries - 1
+		if len(car.rides) > 0: 
+			ride_index = random.randint(0, len(car.rides) - 1)
+			self.rides_no_assinged = self.rides_no_assinged + [car.rides[ride_index]]
+			car.rides.pop(ride_index)
+
 
 	def shift_rides(self):
 		pass
@@ -73,5 +117,17 @@ class Solution:
 		return score_final
 
 
+	def mutate(self):
+		functions = [self.add_no_assigned_ride, self.swap_rides, self.from_car_to_unassigned]
 
+		func = random.choice(functions)
+		func()
+
+
+def next_generation(solutions, size_next_gen=100, mutations_per_solution_max=50)
+# Tienes de 1 a N soluciones
+# ordenar por score
+# mutar a todas las soluciones: gaurdandote la antigua generacion, generando mas de las que hay y ademas, mutando mas veces a las mejores que a las peores
+# ordenar por score y devovler las M mejores
+# hacer de 0 a X mutaciones por solucion
 
