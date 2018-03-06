@@ -17,8 +17,7 @@ def value_solution(cars):
 			print(ride.id)
 	pass
 
-suma = 0
-
+suma_total = 0
 files=['a_example','b_should_be_easy','c_no_hurry','d_metropolis','e_high_bonus']
 
 for file in files:
@@ -42,7 +41,10 @@ for file in files:
 		car_next = cars[0]
 
 		# Asignar siguiente tarea disponible al coche
-		rides.sort(key=lambda x: x.time_init + distance_to_from(car_next.position, x.position_init), reverse=False)
+
+		#puede: - distance_to_from(x.position_init, x.position_final) o  - car_next.available_in
+		#MEJORA max(distance_to_from(car_next.position, x.position_init) + car_next.step_available, x.time_init ) 
+		rides.sort(key=lambda x: x.time_init  + distance_to_from(car_next.position, x.position_init) , reverse=False)
 		ride_next = rides[0]
 		rides.pop(0)				
 
@@ -50,6 +52,10 @@ for file in files:
 		time_to_start_expected = ride_next.time_init 
 		time_to_start_real = max(time_to_go, time_to_start_expected ) 
 		distance = distance_to_from(ride_next.position_init, ride_next.position_final)
+
+
+ 
+
 
 		# catch only if the car is able to make it in time
 		if time_to_start_real + distance <= ride_next.time_final:
@@ -60,17 +66,18 @@ for file in files:
 
 			# Calculate score
 			suma = suma + distance
+			car_next.score = car_next.score + distance
 			if time_to_start_real == time_to_start_expected:
 				suma = suma + bonus
+				car_next.score = car_next.score + bonus
 
-
+	suma_total = suma_total + sum(c.score for c in cars)
 
 
 	ex = Extractor.Extractor(cars, file)
 	ex.write()
-print('score: ' + str(suma/1000000.0) + ' M')
-# Creo que eta solucion da 40496957: 40.5 M
 
+print('score: ' + str(suma_total/1000000.0) + ' M')
 
 '''
 IDEAS:
