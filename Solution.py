@@ -20,12 +20,25 @@ class Solution:
 			car.rides = car.rides + [ride]
 
 	def swap_rides(self):
+		car1 = random.choice(self.cars)
+		car2 = random.choice(self.cars)
+		while car1 == car2:
+			car2 = random.choice(self.cars)
+
+		if len(car1.rides) > 0 and len(car2.rides) > 0:
+			ride2_index = random.randint(0, len(car2.rides) - 1)
+			ride1_index = random.randint(0, len(car1.rides) - 1)
+			aux = car2.rides[ride2_index].copy()
+			car2.rides[ride2_index] = car1.rides[ride1_index]
+			car1.rides[ride1_index] = aux
+			#  right?
+
+		
+
+	def from_car_to_unassigned(self):
 		pass
 
-	def from_car_to_unassigned():
-		pass
-
-	def shift_rides():
+	def shift_rides(self):
 		pass
 
 
