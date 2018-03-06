@@ -18,10 +18,10 @@ def value_solution(cars):
 	pass
 
 files=['a_example','b_should_be_easy','c_no_hurry','d_metropolis','e_high_bonus']
-
+best_scores=[10, 176877, 15777925, 10296018, 21465945]
 suma_total = 0
 
-for file in files:
+for file, score in zip(files, best_scores):
 	print(file)
 
 	loader = Loader.Loader(file+'.in')
@@ -84,8 +84,10 @@ for file in files:
 
 		else:
 			fin = True
-	suma_total = suma_total + sum(c.score for c in cars)
-
+	score_new = sum(c.score for c in cars)
+	suma_total = suma_total + score_new
+	if score_new > score:
+		print('NUEVA MEJORA DE PUNTUACION EN EL FICHERO: ' + file)
 
 	ex = Extractor.Extractor(cars, file)
 	ex.write()
