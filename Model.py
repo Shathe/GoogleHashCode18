@@ -15,6 +15,7 @@ def distance_to_from(a, b):
 
 
 files=['a_example','b_should_be_easy','c_no_hurry','d_metropolis','e_high_bonus']
+files=['d_metropolis']
 
 best_scores=[10, 176877, 15777925, 10296018, 21465945]
 best_global = 45664825
@@ -85,11 +86,11 @@ for file, score in zip(files, best_scores):
 			fin = True
 
 
-	solution = Solution.Solution(cars, rule_out_rides, bonus)
+	solution = Solution.Solution(cars, rule_out_rides, bonus, steps)
 	solutions =  solutions + [solution]
 
 	print('genetic algorithm:')
-	solution = Solution.genetic_alg([solution], num_generations=200, max_size_gen=200, size_final_gen=30, mutations_per_solution_max=70, name=file)
+	solution = Solution.genetic_alg([solution], num_generations=1000, max_size_gen=300, size_final_gen=75, mutations_per_solution_max=30, name=file)
 	np.save('array_' + file, solution, allow_pickle=True, fix_imports=True)
 
 	score_new = solution.get_score()
@@ -98,7 +99,7 @@ for file, score in zip(files, best_scores):
 	if score_new > score:
 		print('NUEVA MEJORA DE PUNTUACION EN EL FICHERO: ' + file)
 
-	ex = Extractor.Extractor(cars, file)
+	ex = Extractor.Extractor(solution.cars, file)
 	ex.write()
 
 print('score: ' + str(suma_total/1000000.0) + ' M')
