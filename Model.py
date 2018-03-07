@@ -6,6 +6,8 @@ import numpy as np
 import random
 import math
 import Solution
+import copy
+
 # Manhatan distance
 def distance_to_from(a, b):
 	return abs(a[0]-b[0]) + abs(a[1]-b[1])
@@ -13,7 +15,6 @@ def distance_to_from(a, b):
 
 
 files=['a_example','b_should_be_easy','c_no_hurry','d_metropolis','e_high_bonus']
-files=['b_should_be_easy']
 
 best_scores=[10, 176877, 15777925, 10296018, 21465945]
 best_global = 45664825
@@ -87,7 +88,9 @@ for file, score in zip(files, best_scores):
 	solution = Solution.Solution(cars, rule_out_rides, bonus)
 	solutions =  solutions + [solution]
 
-
+	print('genetic algorithm:')
+	solution = Solution.genetic_alg([solution], num_generations=200, max_size_gen=200, size_final_gen=30, mutations_per_solution_max=70, name=file)
+	np.save('array_' + file, solution, allow_pickle=True, fix_imports=True)
 
 	score_new = solution.get_score()
 	suma_total = suma_total + score_new

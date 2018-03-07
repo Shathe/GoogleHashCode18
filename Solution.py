@@ -1,5 +1,7 @@
 import time
 import random
+
+import copy
 # Manhatan distance
 def distance_to_from(a, b):
 	return abs(a[0]-b[0]) + abs(a[1]-b[1])
@@ -24,12 +26,23 @@ class Solution:
 			if ride.time_init >= self.cars[index_car].rides[i].time_final:
 				index_min = i + 1
 
-			if ride.time_final <= self.cars[index_car].rides[i].time_init:
+			if ride.time_final >= self.cars[index_car].rides[i].time_init:
 				index_max = i + 1
 
 			i = i + 1
 
 
+		if index_max < index_min:
+			print('indexes')
+			print(index_min)
+			print(index_max)
+			print('ride')
+			print(ride.time_init)
+			print(ride.time_final)
+			for ride_pr in self.cars[index_car].rides:
+				print('ride_pr')
+				print(ride_pr.time_init)
+				print(ride_pr.time_final)
 		index = random.randint(index_min, index_max)
 		self.cars[index_car].rides.insert(index, ride)
 
@@ -43,7 +56,7 @@ class Solution:
 			car_index = random.randint(0, len(self.cars) - 1)
 			ride = random.choice(self.rides_no_assinged)
 			# Add it into a fittable position
-			self.add_ride_into_car(index_car, ride)
+			self.add_ride_into_car(car_index, ride)
 
 	def swap_rides(self):
 		# get two cars (indexes)
@@ -124,10 +137,33 @@ class Solution:
 		func()
 
 
-def next_generation(solutions, size_next_gen=100, mutations_per_solution_max=50)
-# Tienes de 1 a N soluciones
-# ordenar por score
-# mutar a todas las soluciones: gaurdandote la antigua generacion, generando mas de las que hay y ademas, mutando mas veces a las mejores que a las peores
-# ordenar por score y devovler las M mejores
-# hacer de 0 a X mutaciones por solucion
+def next_generation(solutions, max_size_gen=1000, size_final_gen=100, mutations_per_solution_max=50):
+	new_gen_solutions = copy.deepcopy(solutions)
+	#Solutions must be a list
+	solutions.sort(key=lambda x:  x.get_score(), reverse=True) # Mas altas primero
 
+	for step in xrange(max_size_gen):
+
+		# get a random index. But the first elemetns will have more probabilities
+		index_solution = min(random.randint(0, len(solutions)-1), random.randint(0, len(solutions)-1))
+		solution_to_mutate = copy.deepcopy(solutions[index_solution])
+		# Mute N times
+		for times in xrange(random.randint(1, mutations_per_solution_max)):
+			solution_to_mutate.mutate()
+		new_gen_solutions = new_gen_solutions + [solution_to_mutate]
+
+	new_gen_solutions.sort(key=lambda x:  x.get_score(), reverse=True) # Mas altas primero
+
+	return new_gen_solutions[0:size_final_gen]
+
+
+
+def genetic_alg(next_gen, num_generations=200, max_size_gen=1000, size_final_gen=100, mutations_per_solution_max=50, name=""):
+	print('start solution:' + str(next_gen[0].get_score()))
+	for times in xrange(num_generations):
+		next_gen = next_generation(next_gen, max_size_gen, size_final_gen, mutations_per_solution_max)
+		print('iter :' + str(times) + ', name: ' +name)
+		print('best solution:' + str(next_gen[0].get_score()))
+		print('worst solution:' + str(next_gen[size_final_gen-1].get_score()))
+		
+	return next_gen[0]
