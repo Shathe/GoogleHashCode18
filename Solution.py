@@ -1,7 +1,11 @@
 import time
 import random
-
+import numpy as np
+import Extractor
 import copy
+import pickle 
+import math 
+
 # Manhatan distance
 def distance_to_from(a, b):
 	return abs(a[0]-b[0]) + abs(a[1]-b[1])
@@ -26,12 +30,19 @@ class Solution:
 		return i
 
 	def reorder(self):
+		
 		car_index = random.randint(0, len(self.cars) - 1)
-		ride_index = random.randint(0, len(self.cars[car_index].rides) - 2)
-		ride1=copy.deepcopy(self.cars[car_index].rides[ride_index])
-		ride2=copy.deepcopy(self.cars[car_index].rides[ride_index+1])
-		self.cars[car_index].rides[ride_index]=ride2
-		self.cars[car_index].rides[ride_index+1]=ride1
+		tries=15
+		while(tries > 0 and len(self.cars[car_index].rides) < 2):
+			car_index = random.randint(0, len(self.cars) - 1)
+			tries = tries - 1
+
+		if tries != 0:
+			ride_index = random.randint(0, len(self.cars[car_index].rides) - 2)
+			ride1=copy.deepcopy(self.cars[car_index].rides[ride_index])
+			ride2=copy.deepcopy(self.cars[car_index].rides[ride_index+1])
+			self.cars[car_index].rides[ride_index]=ride2
+			self.cars[car_index].rides[ride_index+1]=ride1
 
 	def add_ride_into_car(self, index_car, ride):
 		i = 0
@@ -151,20 +162,37 @@ class Solution:
 def next_generation(solutions, max_size_gen=1000, size_final_gen=100, mutations_per_solution_max=50):
 
 	#Solutions must be a list
-	solutions.sort(key=lambda x:  x.get_score(), reverse=True) # Mas altas primero
+	#solutions.sort(key=lambda x:  x.get_score(), reverse=True) # Mas altas primero
 	new_gen_solutions = copy.deepcopy(solutions)
-	new_gen_solutions = new_gen_solutions[:int(len(new_gen_solutions)/4)+1]
+
+	# quedarte solo la mitad de los mejores de la antrior gneracion
+	new_gen_solutions = new_gen_solutions[:int(size_final_gen/4)+1]
+
+	#llenar scores
+	scores_solutions = []
+	for solution in new_gen_solutions:
+		scores_solutions = scores_solutions + [solution.get_score()]
+
 	for step in xrange(max_size_gen):
 
 		# get a random index. But the first elemetns will have more probabilities
 		index_solution = min(random.randint(0, len(solutions)-1), random.randint(0, len(solutions)-1))
 		solution_to_mutate = copy.deepcopy(solutions[index_solution])
+
+		# la mitad de veces, lo que se hara ser mutaciones aleatorias sin mirar hasta lelgar al final pero la otra mitad, 
+		# si una mutacion empeora, vuelves atras
 		# Mute N times
+
 		for times in xrange(random.randint(1, mutations_per_solution_max)):
 			solution_to_mutate.mutate()
-		new_gen_solutions = new_gen_solutions + [solution_to_mutate]
+		
+			
+		#no repetir soluciones 
+		if solution_to_mutate.get_score()  not in scores_solutions:
+			new_gen_solutions = new_gen_solutions + [solution_to_mutate]
 
 	new_gen_solutions.sort(key=lambda x:  x.get_score(), reverse=True) # Mas altas primero
+	new_gen_solutions = new_gen_solutions[0:size_final_gen]
 
 	return new_gen_solutions[0:size_final_gen]
 
@@ -177,6 +205,10 @@ def genetic_alg(next_gen, num_generations=200, max_size_gen=1000, size_final_gen
 		print('iter :' + str(times) + ', name: ' +name)
 		print('best solution:' + str(next_gen[0].get_score()))
 		print('worst solution:' + str(next_gen[size_final_gen-1].get_score()))
-	print('start solution:' + str(next_gen[0].get_score()))
+		print('start solution:' + str(next_gen[0].get_score()))
+		file_write = open(name + '.obj', 'w') 
+		pickle.dump(next_gen[0], file_write)
+		ex = Extractor.Extractor(next_gen[0].cars, name)
+		ex.write()
 
 	return next_gen[0]
